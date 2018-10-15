@@ -14,4 +14,4 @@ deploy:
   provider: script
   skip_cleanup: true
   script:
-- curl -T otusip-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb -uvikorzel:$BINTRAY_API_KEY "https://api.bintray.com/content/otushomeworks/otushw/homework/$TRAVIS_BUILD_NUMBER/helloworld-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb;deb_distribution=trusty,bionic;deb_component=main;deb_architecture=amd64;publish=1"
+- curl -T otusip-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb -uvikorzel:$BINTRAY_API_KEY "https://api.bintray.com/content/otushomeworks/otushw/homework/$TRAVIS_BUILD_NUMBER/otusip-0.0.$TRAVIS_BUILD_NUMBER-Linux.deb;deb_distribution=trusty,bionic;deb_component=main;deb_architecture=amd64;publish=1"
