@@ -12,7 +12,7 @@ int main(){
         return s1_i<s2_i;
     };
 
-    auto addrs = std::set<std::string,typeof(cmp)>(cmp);
+    auto addrs = std::set<std::string,decltype(cmp)>(cmp);
 
     for(std::string line; std::getline(std::cin, line);){
         std::string addr;
