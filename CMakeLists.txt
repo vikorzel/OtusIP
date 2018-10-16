@@ -20,10 +20,10 @@ add_library(ip_utils src/ip_utils.cpp)
 add_executable(otusip       src/main.cpp)
 add_executable(otusip_tests tests/main_tests.cpp src/ip_utils.cpp)
 
-set_target_properties(otusip otusip_tests PROPERTIES
-                        CXX_STANDARD 14
-                        CXX_STANDARD_REQUIRED NO
-                        COMPILE_OPTIONS "-Wpedantic;-Wall;-Wextra"
+set_target_properties(otusip ip_utils otusip_tests PROPERTIES
+			CXX_STANDARD 14
+			CXX_STANDARD_REQUIRED YES
+                        COMPILE_OPTIONS "-Wpedantic;-Wall;-Wextra;-std=c++14"
                      )
 set_target_properties(  otusip_tests PROPERTIES
                                      COMPILE_DEFINITIONS BOOST_TEST_DYN_LINK
