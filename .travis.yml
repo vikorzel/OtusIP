@@ -1,10 +1,9 @@
 language: cpp
 compiler: clang
 before_script:
-- echo "deb http://archive.ubuntu.com/ubuntu xenial main universe" | sudo tee -a /etc/apt/sources.list.d/xenial.list
 - sudo apt-get update
 - sudo apt install libboost-test-dev -y
-- sudo apt update
+- echo "deb http://archive.ubuntu.com/ubuntu xenial main universe" | sudo tee -a /etc/apt/sources.list.d/xenial.list
 - sudo apt install libspdlog-dev -y
 script:
 - cmake .
