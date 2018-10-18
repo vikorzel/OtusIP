@@ -19,7 +19,7 @@ int main(){
         int err_code;
         std::tie(addr,err_code) = iputils::getaddr(line);
         if(err_code == 0){
-            addrs.insert(addr);
+            addrs.insert(std::move(addr));
         }
     }
     for(const std::string& addr: addrs){
