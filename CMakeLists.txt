@@ -31,7 +31,7 @@ set_target_properties(  otusip_tests PROPERTIES
     )
 target_include_directories(otusip_tests PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
-target_link_libraries(ip_filter ip_utils)
+target_link_libraries(ip_filter  ip_utils)
 target_link_libraries(otusip_tests ip_utils ${Boost_LIBRARIES})
 
 install(TARGETS ip_filter RUNTIME DESTINATION bin)
