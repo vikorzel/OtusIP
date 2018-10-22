@@ -9,7 +9,7 @@ int main(){
         uint32_t s1_i, s2_i;
         std::tie(s1_i,err)=iputils::strtoint(str1);
         std::tie(s2_i,err)=iputils::strtoint(str2);
-        return s1_i<s2_i;
+        return s1_i>s2_i;
     };
 
     auto addrs = std::set<std::string,decltype(cmp)>(cmp);
