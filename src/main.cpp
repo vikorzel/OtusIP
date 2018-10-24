@@ -38,6 +38,7 @@ enum class CompareResults{
 };
 
 
+
 auto compare_ip(const std::vector<std::string>& ip1, const std::vector<std::string>& ip2){
     if(ip1.size() != 4 || ip2.size() != 4){
         return std::make_tuple(CompareResults::UNKNOWN,CompareErrors::WRONG_IPSIZE);
@@ -64,15 +65,6 @@ auto compare_ip(const std::vector<std::string>& ip1, const std::vector<std::stri
             return std::make_tuple(CompareResults::LOWER, CompareErrors::OK);
         }
     }
-
-    for(int j = 0 ; j != 4; j++){
-        std::cout<<ip1[j]<<".";
-    }
-    std::cout<<" EQ ";
-    for(int j = 0 ; j != 4; j++){
-        std::cout<<ip2[j]<<".";
-    }
-    std::cout<<std::endl;
     return std::make_tuple(CompareResults::EQUAL, CompareErrors::OK);
 }
 
@@ -124,6 +116,45 @@ using namespace std::literals::chrono_literals;
 using ip_addr = std::vector<std::string>;
 using ip_storage = std::vector<ip_addr>;
 
+template<typename T>
+bool valid_ip(ip_addr& addr, int num, T pattern){
+    static_assert(std::is_integral<T>::value,"Pattern should be integral");
+    return (addr[num]==std::to_string(static_cast<int>(pattern)));
+}
+
+template <typename T, typename ... Ts>
+bool valid_ip(ip_addr& addr, int num, T pattern,  Ts ... another_patterns){
+    static_assert(std::is_integral<T>::value,"Pattern should be integral");
+    return (addr[num]==std::to_string(static_cast<int>(pattern)))&&valid_ip(addr,num+1, another_patterns...);
+}
+
+
+
+template<typename ... Ts>
+ip_storage filter( ip_storage& ips, Ts ... patterns ){
+    const int n = sizeof ... (Ts);
+    static_assert(n <= 4,"Too much patterns");
+    ip_storage ret_ips;
+    for( auto ip = ips.rbegin(); ip != ips.rend(); ip++ ){
+        if( valid_ip( *ip, 0 , patterns... ) ){
+            ret_ips.push_back(*ip);
+        }
+    }
+    return ret_ips;
+}
+
+ip_storage filter_any( ip_storage& ips, int filter_pattern ){
+    ip_storage ret;
+    for( auto ip = ips.rbegin() ; ip != ips.rend() ; ip++ ){
+        for(auto& part: *ip){
+            if( part == std::to_string(filter_pattern) ){
+                ret.push_back(*ip);
+                break;
+            }
+        }
+    }
+    return ret;
+}
 
 int main(){
     try
@@ -141,7 +172,7 @@ int main(){
 
 
         // TODO reverse lexicographically sort
-        if(err == CompareErrors::OK){
+        if(err != CompareErrors::OK){
             for(auto ip = ip_pool.rbegin(); ip != ip_pool.rend(); ++ip)
             {
                 for(std::vector<std::string>::const_iterator ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part)
@@ -158,6 +189,18 @@ int main(){
         }else{
             std::cout<<"ErrNo: "<< static_cast<std::underlying_type<CompareErrors>::type>(err)<<std::endl;
         }
+
+        auto filtered_ips = filter_any(ip_pool,46);
+        for(auto& ip: filtered_ips){
+            for(auto part = ip.cbegin(); part != ip.cend(); part++){
+                if(part != ip.cbegin()){
+                    std::cout<<".";
+                }
+                std::cout<<*part;
+            }
+            std::cout<<std::endl;
+        }
+        //ip = filter(ip_pool,"46","70");
         // 222.173.235.246
         // 222.130.177.64
         // 222.82.198.61
