@@ -1,3 +1,4 @@
+#include "ip_utils.h"
 #include <iostream>
 #include <set>
 #include <tuple>
@@ -5,61 +6,67 @@
 #include <algorithm>
 #include <thread>
 #include <chrono>
-#include "ip_utils.h"
 
-std::vector<std::string> split(const std::string &str, char d)
+
+
+void add_val(std::vector<int>& vec, std::string val){
+    vec.push_back(std::stoi(val));
+}
+
+void add_val(std::vector<std::string>& vec, std::string val){
+    vec.push_back(val);
+}
+
+template <typename T>
+std::vector<T> split(const std::string &str, char d)
 {
-    std::vector<std::string> r;
+    std::vector<T> r;
     r.reserve(4);
     std::string::size_type start = 0;
     std::string::size_type stop = str.find_first_of(d);
     while(stop != std::string::npos)
-    {
-        r.push_back(str.substr(start, stop - start));
+    {        
+        add_val(r,str.substr(start, stop - start));
         start = stop + 1;
         stop = str.find_first_of(d, start);
-    }
-    r.push_back(str.substr(start));
-
+    }            
+    add_val(r,str.substr(start));
     return r;
 }
+
+std::vector<std::string> split_input(const std::string &str){
+    return split<std::string>(str,'\t');
+}
+
+std::vector<int> split_ip(const std::string &str){
+    return split<int>(str,'.');
+}
+
+
 int main(){    
     try
     {
         ip_storage ip_pool;
         for(std::string line; std::getline(std::cin, line);)
         {
-            std::vector<std::string> v = split(line, '\t');
-            ip_pool.push_back(split(v.at(0), '.'));
+            std::vector<std::string> v = split_input(line);
+            ip_pool.push_back(split_ip(v.at(0)));
         }
-
-        auto err = iputils::sort_ip_vec(ip_pool,0,ip_pool.size()-1);
-        if(err == CompareErrors::OK){
-            for(auto ip = ip_pool.rbegin(); ip != ip_pool.rend(); ++ip)
-            {
-                for(ip_addr::const_iterator ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part)
-                {                   
-                    std::cout << (ip_part != ip->cbegin() ? "." : "") << *ip_part;
-                }
-                std::cout << std::endl;
-            }
-        }else{
-            std::cout<<"ErrNo: "<< static_cast<std::underlying_type<CompareErrors>::type>(err)<<std::endl;
-            return -1;
-        }
-        /*
-        auto filtered_ips = iputils::filter_any(ip_pool,46); //iputils::filter(ip_pool,1,2);
-        for(auto& ip: filtered_ips){
-            for(auto part = ip.cbegin(); part != ip.cend(); part++){                
-                std::cout<<(part != ip.cbegin())?",":""<<*part;
-            }
+        std::sort(ip_pool.begin(), ip_pool.end(), std::greater<std::vector<int>>());
+        for( auto& ip: ip_pool ){
+            iputils::print_ip(ip);
             std::cout<<std::endl;
         }
-        */
+        /*auto filtered = iputils::filter(ip_pool,5,8);
+        for( auto ip: filtered ){
+            iputils::print_ip(ip);
+            std::cout<<std::endl;
+        }*/
     }
     catch(const std::exception &e)
     {
         std::cerr << e.what() << std::endl;
+        return -1;
     }
 
     return 0;

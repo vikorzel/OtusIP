@@ -4,50 +4,35 @@
 BOOST_AUTO_TEST_SUITE(test_suite_main)
 BOOST_AUTO_TEST_CASE(iputils_valid)
 {
-    std::string addr;
-    int err_n;
-    uint32_t addr_i;
-    std::tie(addr, err_n) = iputils::getaddr("192.168.50.1\tanother\text");
-    BOOST_CHECK(addr=="192.168.50.1");
-    BOOST_CHECK(err_n==0);
-    std::tie(addr_i,err_n) = iputils::strtoint(addr);
-    BOOST_CHECK(addr_i==3232248321);
-    BOOST_CHECK(err_n==0);
-    std::tie(addr, err_n) = iputils::getaddr("192.168.50.1anotherext");
-    BOOST_CHECK(err_n==-1);
-    std::tie(addr, err_n) = iputils::getaddr("8.800.555.35.35\tanothertext");
-    BOOST_CHECK(err_n==-2);
-    std::tie(addr_i,err_n) = iputils::strtoint("https://g.gg");
-    BOOST_CHECK(err_n==-1);
-    std::tie(addr_i,err_n) = iputils::strtoint("8.800.555.35.35");
-    BOOST_CHECK(err_n==-2);
-    std::tie(addr_i,err_n) = iputils::strtoint("0.0.0.0.0.0");
-    BOOST_CHECK(err_n==-3);
+    ip_storage storage = { {123,45,67,89}, {12,85,0,0}, {77,77,89,7}, {77,7,7,7} };
+    ip_storage any = iputils::filter_any(storage,89);
+    ip_storage single = iputils::filter(storage,12);
+    ip_storage multi = iputils::filter(storage,77);
+    ip_storage dbl_filter = iputils::filter(storage,77,77);
 
-    ip_storage test_vec;
-    CompareErrors err;
-    test_vec.reserve(3);
+    BOOST_CHECK( single.size() == 1 );
+    BOOST_CHECK( any.size() == 2 );
+    BOOST_CHECK( multi.size() == 2);
+    BOOST_CHECK( dbl_filter.size() == 1 );
+
+    BOOST_CHECK(( single[0] == ip_addr{ 12,85,0,0 } ));
+    BOOST_CHECK(( dbl_filter[0] == ip_addr{77,77,89,7} ));
+
+    bool has_fst, has_snd;
+    has_fst=has_snd=false;
+    for( auto ip: any ){
+        if( ip == ip_addr{123,45,67,89} ) has_fst = true;
+        if( ip == ip_addr{77,77,89,7} ) has_snd = true;
+    }
+    BOOST_CHECK( has_fst && has_snd );
+
+    has_fst=has_snd=false;
+    for( auto ip: multi ){
+        if( ip == ip_addr{77,7,7,7} ) has_fst = true;
+        if( ip == ip_addr{77,77,89,7} ) has_snd = true;
+    }
 
 
-    test_vec.push_back(ip_addr{"8","8","8","8"});
-    test_vec.push_back(ip_addr{"192","168","50","1"});
 
-
-    err = iputils::sort_ip_vec(test_vec,0,1);
-    BOOST_CHECK(err == CompareErrors::OK);
-    BOOST_CHECK(test_vec[1][0]=="192");
-    BOOST_CHECK(test_vec[0][0]=="8");
-    BOOST_CHECK(test_vec.size() == 2);
-
-    test_vec.push_back(ip_addr{"256","168","50","1"});
-    err = iputils::sort_ip_vec(test_vec,0,2);
-    BOOST_CHECK(err==CompareErrors::WRONG_IPPART);
-    test_vec.pop_back();
-    test_vec.pop_back();
-    test_vec.pop_back();
-
-    test_vec.push_back(ip_addr{"2561","168","50","1","3"});
-    err = iputils::sort_ip_vec(test_vec,0,0);
-    BOOST_CHECK(err==CompareErrors::WRONG_IPSIZE);
 }
 BOOST_AUTO_TEST_SUITE_END()
