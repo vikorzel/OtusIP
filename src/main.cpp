@@ -57,11 +57,22 @@ int main(){
             iputils::print_ip(ip);
             std::cout<<std::endl;
         }
-        /*auto filtered = iputils::filter(ip_pool,5,8);
+        auto filtered = iputils::filter(ip_pool,1);
         for( auto ip: filtered ){
             iputils::print_ip(ip);
             std::cout<<std::endl;
-        }*/
+        }
+        filtered = iputils::filter(ip_pool,46,70);
+        for( auto ip: filtered ){
+            iputils::print_ip(ip);
+            std::cout<<std::endl;
+        }
+        filtered = iputils::filter_any(ip_pool,46);
+        for( auto ip: filtered ){
+            iputils::print_ip(ip);
+            std::cout<<std::endl;
+        }
+
     }
     catch(const std::exception &e)
     {
